@@ -16,10 +16,12 @@
   <header>
     <span class="logo">News</span>
   </header>
-  <main id="news-list"></main>
+  <main>
+    <div id="news-list" class="news-list"></div>
+  </main>
   <footer>
-    <button class="tab active" aria-label="Home"><i class="fa-solid fa-house" style="color: var(--color-primary);"></i></button>
-    <button class="tab" aria-label="Admin" onclick="window.location='/admin/login.html'"><i class="fa-solid fa-lock" style="color: #888;"></i></button>
+    <button class="tab active"><i class="fa-solid fa-house"></i><span class="tab-label">Home</span></button>
+    <button class="tab" onclick="window.location='/admin/login.html'"><i class="fa-solid fa-lock"></i><span class="tab-label">Admin</span></button>
   </footer>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
