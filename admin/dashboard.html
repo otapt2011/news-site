@@ -15,10 +15,14 @@
   <header>
     <span class="logo">Dashboard</span>
   </header>
-  <main id="dashboard"></main>
+  <main>
+    <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+      <button class="btn" onclick="window.location='edit.html'"><i class="fa-solid fa-plus"></i> New Article</button>
+    </div>
+    <div id="dashboard"></div>
+  </main>
   <footer>
-    <button class="tab" onclick="window.location='edit.html'"><i class="fa-solid fa-plus-circle" style="color: #0a0;"></i></button>
-    <button class="tab" onclick="window.location='../index.html'"><i class="fa-solid fa-house" style="color: #888;"></i></button>
+    <button class="tab" onclick="window.location='../index.html'"><i class="fa-solid fa-house"></i><span class="tab-label">Home</span></button>
   </footer>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
