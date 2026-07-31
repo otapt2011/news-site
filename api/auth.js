@@ -1,13 +1,18 @@
 import { SignJWT, jwtVerify } from 'jose';
-import bcryptModule from 'bcryptjs';
 import { queryD1 } from './lib/d1-client.js';
 
 export const config = { runtime: 'edge' };
 
-// In Edge Runtime, the default export might be wrapped; extract the real compare.
-const compare = bcryptModule.default?.compare || bcryptModule.compare;
-
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+
+async function sha256hex(text) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
 
 export default async function handler(request) {
   const url = new URL(request.url);
@@ -20,8 +25,12 @@ export default async function handler(request) {
         return new Response(JSON.stringify({ message: 'Invalid credentials' }), { status: 401 });
       }
       const admin = rows[0];
-      const valid = await compare(password, admin.password_hash);
-      if (!valid) {
+
+      // Compute hash of password + JWT secret (pepper)
+      const input = password + process.env.JWT_SECRET;
+      const hash = await sha256hex(input);
+
+      if (hash !== admin.password_hash) {
         return new Response(JSON.stringify({ message: 'Invalid credentials' }), { status: 401 });
       }
 
