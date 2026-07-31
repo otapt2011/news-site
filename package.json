@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
+    "bcrypt-edge": "^1.0.0",
     "jose": "^5.2.0"
   }
 }
