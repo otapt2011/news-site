@@ -1,6 +1,7 @@
 import { jwtVerify } from 'jose';
 import { queryD1 } from './lib/d1-client.js';
 
+export const config = { runtime: 'edge' };
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 async function authenticate(request) {
