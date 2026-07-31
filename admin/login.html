@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/modules/api.js"></script>
+  <script src="../js/modules/auth.js"></script>
+  <script src="../js/modules/ui.js"></script>
+  <script src="../js/app.js"></script>
+</head>
+<body>
+  <header>
+    <span class="logo">Admin</span>
+  </header>
+  <main>
+    <form id="login-form">
+      <label><i class="fa-solid fa-user" style="color: var(--color-primary);"></i> Username</label>
+      <input type="text" id="username" required>
+      <label><i class="fa-solid fa-key" style="color: var(--color-primary);"></i> Password</label>
+      <input type="password" id="password" required>
+      <button type="submit"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+    </form>
+    <div id="message"></div>
+  </main>
+  <footer>
+    <button class="tab" onclick="window.location='../index.html'"><i class="fa-solid fa-house" style="color: #888;"></i></button>
+  </footer>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      try {
+        const token = await window.App.api.login(username, password);
+        window.App.auth.saveToken(token);
+        window.location = 'dashboard.html';
+      } catch (err) {
+        window.App.ui.showMessage('Invalid credentials', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Article</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/modules/api.js"></script>
+  <script src="../js/modules/auth.js"></script>
+  <script src="../js/modules/ui.js"></script>
+  <script src="../js/app.js"></script>
+</head>
+<body>
+  <header>
+    <button class="back-btn" onclick="history.back()"><i class="fa-solid fa-chevron-left" style="color: var(--color-primary);"></i></button>
+    <span class="logo">Edit</span>
+  </header>
+  <main>
+    <form id="edit-form">
+      <label><i class="fa-solid fa-heading" style="color: var(--color-primary);"></i> Title</label>
+      <input type="text" id="title" required>
+      <label><i class="fa-solid fa-align-left" style="color: var(--color-primary);"></i> Content</label>
+      <textarea id="content" rows="8" required></textarea>
+      <label><i class="fa-solid fa-film" style="color: var(--color-primary);"></i> Embed type</label>
+      <select id="embed_type">
+        <option value="none">None</option>
+        <option value="tiktok">TikTok</option>
+        <option value="youtube">YouTube</option>
+      </select>
+      <label><i class="fa-solid fa-link" style="color: var(--color-primary);"></i> Embed URL</label>
+      <input type="text" id="embed_url">
+      <button type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+    </form>
+    <div id="message"></div>
+  </main>
+  <footer>
+    <button class="tab" onclick="window.location='dashboard.html'"><i class="fa-solid fa-table-list" style="color: #888;"></i></button>
+  </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!window.App.auth.isLoggedIn()) {
+        window.App.auth.requireAuth();
+        return;
+      }
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      if (id) {
+        try {
+          const article = await window.App.api.getArticle(id);
+          document.getElementById('title').value = article.title;
+          document.getElementById('content').value = article.content;
+          document.getElementById('embed_type').value = article.embed_type;
+          document.getElementById('embed_url').value = article.embed_url || '';
+          document.getElementById('edit-form').dataset.id = id;
+        } catch (e) {
+          window.App.ui.showMessage('Article not found', 'error');
+        }
+      }
+
+      document.getElementById('edit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const token = window.App.auth.getToken();
+        const data = {
+          title: document.getElementById('title').value,
+          content: document.getElementById('content').value,
+          embed_type: document.getElementById('embed_type').value,
+          embed_url: document.getElementById('embed_url').value
+        };
+        try {
+          const formId = document.getElementById('edit-form').dataset.id;
+          if (formId) {
+            await window.App.api.updateArticle(formId, data, token);
+          } else {
+            await window.App.api.createArticle(data, token);
+          }
+          window.location = 'dashboard.html';
+        } catch (err) {
+          window.App.ui.showMessage('Save failed', 'error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
