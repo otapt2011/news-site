@@ -1,5 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose';
-import bcrypt from 'bcryptjs';
+import { compare } from 'bcrypt-edge';
 import { queryD1 } from './lib/d1-client.js';
 
 export const config = { runtime: 'edge' };
@@ -17,7 +17,7 @@ export default async function handler(request) {
         return new Response(JSON.stringify({ message: 'Invalid credentials' }), { status: 401 });
       }
       const admin = rows[0];
-      const valid = await bcrypt.compare(password, admin.password_hash);
+      const valid = await compare(password, admin.password_hash);
       if (!valid) {
         return new Response(JSON.stringify({ message: 'Invalid credentials' }), { status: 401 });
       }
