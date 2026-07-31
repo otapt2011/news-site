@@ -15,43 +15,38 @@
   <header>
     <span class="logo">Admin</span>
   </header>
-  <main>
-    <form id="login-form">
-      <label><i class="fa-solid fa-user" style="color: var(--color-primary);"></i> Username</label>
-      <input type="text" id="username" required>
-      <label><i class="fa-solid fa-key" style="color: var(--color-primary);"></i> Password</label>
-      <input type="password" id="password" required>
-      <button type="submit"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
-    </form>
-    <div id="message"></div>
+  <main class="login-container">
+    <div class="login-card">
+      <h2>Sign in</h2>
+      <form id="login-form">
+        <div class="input-group">
+          <i class="fa-solid fa-user"></i>
+          <input type="text" id="username" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+          <i class="fa-solid fa-key"></i>
+          <input type="password" id="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn" style="width:100%"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+      </form>
+    </div>
   </main>
   <footer>
-    <button class="tab" onclick="window.location='../index.html'"><i class="fa-solid fa-house" style="color: #888;"></i></button>
+    <button class="tab" onclick="window.location='../index.html'"><i class="fa-solid fa-house"></i><span class="tab-label">Home</span></button>
   </footer>
-<script>
-  document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    try {
-      const res = await fetch('/api/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await res.json();
-      // Show the full API response in an alert
-      alert(JSON.stringify(data, null, 2));
-      if (res.ok && data.token) {
-        window.App.auth.saveToken(data.token);
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      try {
+        const token = await window.App.api.login(username, password);
+        window.App.auth.saveToken(token);
         window.location = 'dashboard.html';
-      } else {
-        window.App.ui.showMessage('Login failed – see alert for details', 'error');
+      } catch (err) {
+        window.App.ui.showMessage('Invalid credentials', 'error');
       }
-    } catch (err) {
-      window.App.ui.showMessage('Request error', 'error');
-    }
-  });
-</script>
+    });
+  </script>
 </body>
 </html>
