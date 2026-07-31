@@ -13,23 +13,21 @@ export default async function handler(request) {
     try {
       const { username, password } = await request.json();
       const rows = await queryD1('SELECT * FROM admins WHERE username = ?', [username]);
-
-      // --- DEBUG: return the row we found and whether password matches ---
-      if (rows.length === 0) {
-        return new Response(JSON.stringify({ error: 'No admin found', username }), { status: 401 });
+      if (!rows.length) {
+        return new Response(JSON.stringify({ message: 'Invalid credentials' }), { status: 401 });
       }
-
       const admin = rows[0];
       const valid = await bcrypt.compare(password, admin.password_hash);
+      if (!valid) {
+        return new Response(JSON.stringify({ message: 'Invalid credentials' }), { status: 401 });
+      }
 
-      return new Response(JSON.stringify({
-        debug: true,
-        username,
-        stored_hash: admin.password_hash,
-        password_entered: password,
-        match: valid
-      }), { status: valid ? 200 : 401 });
-      // -----------------------------------------------------------------
+      const token = await new SignJWT({ sub: admin.id, username: admin.username })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setExpirationTime('24h')
+        .sign(SECRET);
+
+      return new Response(JSON.stringify({ token }), { status: 200 });
     } catch (e) {
       return new Response(JSON.stringify({ message: 'Server error', details: e.message }), { status: 500 });
     }
