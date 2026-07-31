@@ -1,0 +1,48 @@
+import { SignJWT, jwtVerify } from 'jose';
+import bcrypt from 'bcryptjs';
+import { queryD1 } from './lib/d1-client.js';
+
+export const config = { runtime: 'edge' };
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+
+export default async function handler(request) {
+  const url = new URL(request.url);
+  
+  // Handle login
+  if (request.method === 'POST') {
+    try {
+      const { username, password } = await request.json();
+      const rows = await queryD1('SELECT * FROM admins WHERE username = ?', [username]);
+      if (!rows.length) return new Response(JSON.stringify({ message: 'Invalid credentials' }), { status: 401 });
+      
+      const admin = rows[0];
+      const valid = await bcrypt.compare(password, admin.password_hash);
+      if (!valid) return new Response(JSON.stringify({ message: 'Invalid credentials' }), { status: 401 });
+      
+      const token = await new SignJWT({ sub: admin.id, username: admin.username })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setExpirationTime('24h')
+        .sign(SECRET);
+      
+      return new Response(JSON.stringify({ token }), { status: 200 });
+    } catch (e) {
+      return new Response(JSON.stringify({ message: 'Server error' }), { status: 500 });
+    }
+  }
+  
+  // Handle token verification
+  if (request.method === 'GET') {
+    const authHeader = request.headers.get('Authorization') || '';
+    const token = authHeader.replace('Bearer ', '');
+    if (!token) return new Response(JSON.stringify({ valid: false }), { status: 401 });
+    
+    try {
+      await jwtVerify(token, SECRET);
+      return new Response(JSON.stringify({ valid: true }), { status: 200 });
+    } catch {
+      return new Response(JSON.stringify({ valid: false }), { status: 401 });
+    }
+  }
+  
+  return new Response('Method not allowed', { status: 405 });
+}
