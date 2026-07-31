@@ -28,19 +28,30 @@
   <footer>
     <button class="tab" onclick="window.location='../index.html'"><i class="fa-solid fa-house" style="color: #888;"></i></button>
   </footer>
-  <script>
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      try {
-        const token = await window.App.api.login(username, password);
-        window.App.auth.saveToken(token);
+<script>
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      // Show the full API response in an alert
+      alert(JSON.stringify(data, null, 2));
+      if (res.ok && data.token) {
+        window.App.auth.saveToken(data.token);
         window.location = 'dashboard.html';
-      } catch (err) {
-        window.App.ui.showMessage('Invalid credentials', 'error');
+      } else {
+        window.App.ui.showMessage('Login failed – see alert for details', 'error');
       }
-    });
-  </script>
+    } catch (err) {
+      window.App.ui.showMessage('Request error', 'error');
+    }
+  });
+</script>
 </body>
 </html>
