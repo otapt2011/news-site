@@ -1,8 +1,11 @@
 import { SignJWT, jwtVerify } from 'jose';
-import { compare } from 'bcrypt-edge';
+import bcryptModule from 'bcryptjs';
 import { queryD1 } from './lib/d1-client.js';
 
 export const config = { runtime: 'edge' };
+
+// In Edge Runtime, the default export might be wrapped; extract the real compare.
+const compare = bcryptModule.default?.compare || bcryptModule.compare;
 
 const SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
