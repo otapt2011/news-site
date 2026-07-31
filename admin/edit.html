@@ -13,29 +13,40 @@
 </head>
 <body>
   <header>
-    <button class="back-btn" onclick="history.back()"><i class="fa-solid fa-chevron-left" style="color: var(--color-primary);"></i></button>
-    <span class="logo">Edit</span>
+    <button class="back-btn" onclick="history.back()"><i class="fa-solid fa-chevron-left"></i></button>
+    <span class="logo">Article</span>
   </header>
   <main>
     <form id="edit-form">
-      <label><i class="fa-solid fa-heading" style="color: var(--color-primary);"></i> Title</label>
-      <input type="text" id="title" required>
-      <label><i class="fa-solid fa-align-left" style="color: var(--color-primary);"></i> Content</label>
-      <textarea id="content" rows="8" required></textarea>
-      <label><i class="fa-solid fa-film" style="color: var(--color-primary);"></i> Embed type</label>
-      <select id="embed_type">
-        <option value="none">None</option>
-        <option value="tiktok">TikTok</option>
-        <option value="youtube">YouTube</option>
-      </select>
-      <label><i class="fa-solid fa-link" style="color: var(--color-primary);"></i> Embed URL</label>
-      <input type="text" id="embed_url">
-      <button type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+      <label>Title</label>
+      <div class="input-group">
+        <i class="fa-solid fa-heading"></i>
+        <input type="text" id="title" required>
+      </div>
+      <label>Content</label>
+      <div class="input-group">
+        <i class="fa-solid fa-align-left"></i>
+        <textarea id="content" rows="8" required></textarea>
+      </div>
+      <label>Embed type</label>
+      <div class="input-group">
+        <i class="fa-solid fa-film"></i>
+        <select id="embed_type">
+          <option value="none">None</option>
+          <option value="tiktok">TikTok</option>
+          <option value="youtube">YouTube</option>
+        </select>
+      </div>
+      <label>Embed URL</label>
+      <div class="input-group">
+        <i class="fa-solid fa-link"></i>
+        <input type="text" id="embed_url" placeholder="https://...">
+      </div>
+      <button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> Save</button>
     </form>
-    <div id="message"></div>
   </main>
   <footer>
-    <button class="tab" onclick="window.location='dashboard.html'"><i class="fa-solid fa-table-list" style="color: #888;"></i></button>
+    <button class="tab" onclick="window.location='dashboard.html'"><i class="fa-solid fa-table-list"></i><span class="tab-label">List</span></button>
   </footer>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
